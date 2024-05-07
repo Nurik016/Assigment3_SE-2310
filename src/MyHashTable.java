@@ -1,4 +1,3 @@
-
 public class MyHashTable<K, V> {
     private static final double LOAD_FACTOR = 0.75;
 
@@ -6,6 +5,7 @@ public class MyHashTable<K, V> {
         private K key;
         private V value;
         private HashNode<K, V> next;
+
         public HashNode(K key, V value) {
             this.key = key;
             this.value = value;
@@ -18,31 +18,31 @@ public class MyHashTable<K, V> {
     }
 
     private HashNode<K, V>[] chainArray;
-    private int M=11;
+    private int M = 11; // Default capacity
     private int size;
 
     public MyHashTable(){
-        this.M=11; //just DEFAULT_CAPACITY maybe i will delete this part code because we know that m already 11
         chainArray = new HashNode[M];
-        size=0;
+        size = 0;
     }
 
     public MyHashTable(int M){
-        this.M = M; // changing CAPACITY
+        this.M = M;
         chainArray = new HashNode[M];
-        size=0;
+        size = 0;
     }
 
     private int hash(K key) {
         return key.hashCode() % M;
     }
+
     public void put(K key, V value) {
-        int i   = hash(key);
+        int index = hash(key);
         HashNode<K, V> newNode = new HashNode<>(key, value);
-        if (chainArray[i] == null) {
-            chainArray[i] = newNode;
+        if (chainArray[index] == null) {
+            chainArray[index] = newNode;
         } else {
-            HashNode<K, V> current = chainArray[i];
+            HashNode<K, V> current = chainArray[index];
             while (current.next != null) {
                 if (key.equals(current.key)) {
                     current.value = value;
@@ -54,20 +54,11 @@ public class MyHashTable<K, V> {
         }
         size++;
         checker();
-
-        //for checking busket on linkedlist //just for me
-        System.out.print("Bucket " + i + ": ");
-        HashNode<K, V> temp = chainArray[i];
-        while (temp != null) {
-            System.out.print(temp.key + "->");
-            temp = temp.next;
-        }
-        System.out.println("null");
     }
 
     public V get(K key) {
-        int i = hash(key);
-        HashNode<K, V> current = chainArray[i];
+        int index = hash(key);
+        HashNode<K, V> current = chainArray[index];
         while (current != null) {
             if (key.equals(current.key)) {
                 return current.value;
@@ -78,13 +69,13 @@ public class MyHashTable<K, V> {
     }
 
     public V remove(K key) {
-        int i = hash(key);
-        HashNode<K, V> current = chainArray[i];
+        int index = hash(key);
+        HashNode<K, V> current = chainArray[index];
         HashNode<K, V> prev = null;
         while (current != null) {
             if (key.equals(current.key)) {
                 if (prev == null) {
-                    chainArray[i] = current.next;
+                    chainArray[index] = current.next;
                 } else {
                     prev.next = current.next;
                 }
@@ -114,8 +105,8 @@ public class MyHashTable<K, V> {
         return null;
     }
 
-    public void checker(){
-        if ((double) size / M >= LOAD_FACTOR){
+    public void checker() {
+        if ((double) size / M >= LOAD_FACTOR) {
             resizeAndRehash();
         }
     }
@@ -127,16 +118,33 @@ public class MyHashTable<K, V> {
         for (HashNode<K, V> node : chainArray) {
             HashNode<K, V> current = node;
             while (current != null) {
+                HashNode<K, V> next = current.next;
                 int newIndex = hash(current.key) % newCapacity;
 
-                HashNode<K, V> temp = current.next;
                 current.next = newChainArray[newIndex];
                 newChainArray[newIndex] = current;
-                current = temp;
+                current = next;
             }
         }
-
         M = newCapacity;
         chainArray = newChainArray;
+    }
+
+
+    public int getBucketSize(int index) {
+        if (index < 0 || index >= chainArray.length) {
+            throw new IllegalArgumentException("invalid bucket index");
+        }
+        int count = 0;
+        HashNode<K, V> current = chainArray[index];
+        while (current != null) {
+            count++;
+            current = current.next;
+        }
+        return count;
+    }
+
+    public int getSize() {
+        return size;
     }
 }
