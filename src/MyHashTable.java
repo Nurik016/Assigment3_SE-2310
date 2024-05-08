@@ -144,6 +144,19 @@ public class MyHashTable<K, V> {
         return count;
     }
 
+    public void printBucket(int index) {
+        if (index < 0 || index >= chainArray.length) {
+            throw new IllegalArgumentException("Invalid bucket index");
+        }
+        System.out.println("Elements in Bucket " + index + ":");
+        HashNode<K, V> current = chainArray[index];
+        while (current != null) {
+            System.out.println(current.key + " -> " + current.value);
+            current = current.next;
+        }
+    }
+
+
     public int getSize() {
         return size;
     }

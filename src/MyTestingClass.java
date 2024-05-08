@@ -7,14 +7,12 @@ public class MyTestingClass {
         this.value = value;
     }
 
-    @Override
-    public int hashCode() {
-        int prime = 31;
-        int result = 1;
-        result = prime * result + value;
-        return result;
+    public int hashCode(int capacity) {
+        int hash = value;
+        hash = (hash ^ (hash >>> 20)) ^ (hash >>> 12);
+        hash = (hash ^ (hash >>> 7)) ^ (hash >>> 4);
+        return Math.abs(hash) % capacity;
     }
-
 
     private static final Random random = new Random();
 
@@ -38,12 +36,16 @@ public class MyTestingClass {
     public static void main(String[] args) {
         MyHashTable<MyTestingClass, String> table = new MyHashTable<>();
 
-        for (int i = 0; i <= 10000; i++) {
+        for (int i = 0; i <10000; i++) {
             MyTestingClass key = generateRandomKey();
             String value = generateRandomValue();
             table.put(key, value);
         }
         printBucketSizes(table);
+
+//        for (int i = 0; i <100; i++) {
+//            table.printBucket(i);
+//        }
     }
 
     private static void printBucketSizes(MyHashTable<MyTestingClass, String> table) {
