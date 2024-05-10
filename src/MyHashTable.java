@@ -33,11 +33,16 @@ public class MyHashTable<K, V> {
     }
 
     private int hash(K key) {
-        return key.hashCode() % M;
+        if (key instanceof MyTestingClass) {
+            return ((MyTestingClass) key).hashCode(M);
+        } else {
+            return key.hashCode() % M;
+        }
     }
 
+
     public void put(K key, V value) {
-        int index = hash(key);
+        int index = Math.abs(hash(key)) % M;
         HashNode<K, V> newNode = new HashNode<>(key, value);
         if (chainArray[index] == null) {
             chainArray[index] = newNode;
@@ -115,12 +120,11 @@ public class MyHashTable<K, V> {
         int newCapacity = M * 2;
         HashNode<K, V>[] newChainArray = new HashNode[newCapacity];
 
-        for (HashNode<K, V> node : chainArray) {
-            HashNode<K, V> current = node;
+        for (int i = 0; i < M; i++) {
+            HashNode<K, V> current = chainArray[i];
             while (current != null) {
                 HashNode<K, V> next = current.next;
-                int newIndex = hash(current.key) % newCapacity;
-
+                int newIndex = Math.abs(current.key.hashCode()) % newCapacity;
                 current.next = newChainArray[newIndex];
                 newChainArray[newIndex] = current;
                 current = next;
